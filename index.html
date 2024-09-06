@@ -6,28 +6,43 @@
     <title>Personal Budget</title>
     <meta name="description" content="A free personal budger app">
     <meta name="keywords" content="app free budget finance">
+
+    <!-- This is an SEO Change -->
+    <meta name="description" content="This site is a free tool to track your expenses with your personal budget.">
+
+    <!-- This is an SEO Change -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <!-- This is an SEO Change -->
+    <meta name=”robots” content="index, follow">
+
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
 
-<a href="#main" class="skip">Skip to content</a>
+<!-- This is an A11y Change -->
+<a href="#main" class="skip-to-main-content-link" aria-hidden="true">Skip to content</a>
 
+<!-- This is a Semantic HTML Change -->
+<header>
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/about.html">About</a></li>
-            <li><a href="/login.html">Login</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="login.html">Login</a></li>
             <li><a href="https://google.com">Google</a></li>
         </ul>
     </nav>
+</header>
 
     <div class="hero">
         <h1>Personal Budget</h1>
         <h2>A personal-budget management app</h2>
     </div>
 
-    <main class="center" id="main">
+    <!-- This is an A11y Change -->
+    <main class="center" id="main" role="main">
 
         <div class="page-area">
 
@@ -82,18 +97,23 @@
             <article>
                 <h1>Results</h1>
                 <p>
-                    People who stick to a financial plan, budgeting every expense, get out of debt faster!
-                    Also, they to live happier lives... since they expend without guilt or fear... 
-                    because they know it is all good and accounted for.
+                    <!-- This is a Semantic HTML Change -->
+                    <ul>
+                        <li>People who stick to a financial plan, budgeting every expense, get out of debt faster!</li>
+                        <li>Also, they to live happier lives... since they expend without guilt or fear... 
+                        because they know it is all good and accounted for.</li>
+                    </ul>
                 </p>
             </article>
     
-            <article>
+            <!-- This is a Semantic HTML Change -->
+            <section>
                 <h1>Chart</h1>
                 <p>
-                    <canvas id="myChart" width="400" height="400"></canvas>
+                    <!-- This is an A11y Change -->
+                    <canvas id="myChart" width="400" height="400" role="img" aria-label="Spending chart showing budget breakdown"></canvas>
                 </p>
-            </article>
+            </section>
 
         </div>
 
