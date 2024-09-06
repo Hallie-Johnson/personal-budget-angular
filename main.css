@@ -115,7 +115,7 @@ main article {
     left: -9999px; 
     z-index: 999; 
     padding: 1em;
-    background-color: black;
+    background-color: rgb(78, 64, 116);
     color: white;
     opacity: 0;
   }
