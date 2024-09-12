@@ -135,10 +135,13 @@
                     {
                         data: [],
                         backgroundColor: [
-                            '#ffcd56',
-                            '#ff6384',
-                            '#36a2eb',
-                            '#fd6b19',
+                            '#ffcd56', // Eat out
+                            '#ff6384', // Rent
+                            '#36a2eb', // Grocery
+                            '#fd6b19', // Entertainment
+                            '#4bc0c0', // Utilities
+                            '#9966ff', // Transport
+                            '#ff9f40'  // Savings
                         ]
                     }
                 ],
@@ -159,8 +162,8 @@
                 for (var i = 0; i < res.data.myBudget.length; i++) {
                     dataSource.datasets[0].data[i] = res.data.myBudget[i].budget;
                     dataSource.labels[i] = res.data.myBudget[i].title;
-                    createChart();
                 }
+                createChart();
             });
         }
 
