@@ -4,7 +4,6 @@
   "description": "The path to NGInx main folder: /usr/share/nginx/html",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "repository": {
@@ -20,6 +19,6 @@
   "homepage": "https://github.com/fabionolasco/personal-budget#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.20.0"
   }
 }
