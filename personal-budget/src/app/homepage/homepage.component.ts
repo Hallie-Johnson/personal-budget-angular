@@ -2,6 +2,8 @@ import { Component, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js';
 import { isPlatformBrowser } from '@angular/common';
+import * as d3 from 'd3';
+import { DataService } from '../data.service'; // Import the service
 
 @Component({
   selector: 'pb-homepage',
@@ -15,41 +17,70 @@ export class HomepageComponent implements AfterViewInit {
         {
             data: [],
             backgroundColor: [
-                '#ffcd56', // Eat out
-                '#ff6384', // Rent
-                '#36a2eb', // Grocery
-                '#fd6b19', // Entertainment
-                '#4bc0c0', // Utilities
-                '#9966ff', // Transport
-                '#ff9f40'  // Savings
+                '#ffcd56', '#ff6384', '#36a2eb', '#fd6b19',
+                '#4bc0c0', '#9966ff', '#ff9f40'
             ]
         }
     ],
     labels: []
   };
 
-  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {  }
+  private data: any[] = [];
+  private svg: any;
+  private margin = 0;
+  private width = 250;
+  private height = 250;
+  private radius = Math.min(this.width, this.height) / 2 - 10;
+  private colors!: d3.ScaleOrdinal<string, string>;
+
+  constructor(
+    private dataService: DataService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngAfterViewInit(): void {
-    this.http.get('http://localhost:3000/budget')
-      .subscribe((res: any) => {
-        for (var i = 0; i < res.myBudget.length; i++) {
-          this.dataSource.datasets[0].data[i] = res.myBudget[i].budget;
-          this.dataSource.labels[i] = res.myBudget[i].title;
-        }
-        this.createChart();
+    if (isPlatformBrowser(this.platformId)) {
+      this.createSvg();
+      this.createColors();
+
+      this.dataService.budgetData$.subscribe((budgetData) => {
+        this.updateCharts(budgetData);
       });
+
+      this.dataService.fetchBudgetData();
+    }
   }
 
+  private updateCharts(budgetData: any[]) {
+
+    for (let i = 0; i < budgetData.length; i++) {
+      this.dataSource.datasets[0].data[i] = budgetData[i].budget;
+      this.dataSource.labels[i] = budgetData[i].title;
+
+      this.data.push({
+        "Framework": budgetData[i].title,
+        "Stars": budgetData[i].budget
+      });
+    }
+
+    this.drawChart();
+    this.createChart();
+  }
+
+  private chartInstance: any;
+
   createChart() {
-    // Debugged since professor's code was not working for me
     if (isPlatformBrowser(this.platformId)) {
-      Chart.register(...registerables); // Register all components
+      Chart.register(...registerables);
+
       const canvas = document.getElementById('myChart') as HTMLCanvasElement | null;
       if (canvas) {
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          const myPieChart = new Chart(ctx, {
+          if (this.chartInstance) {
+            this.chartInstance.destroy();
+          }
+          this.chartInstance = new Chart(ctx, {
             type: 'pie',
             data: this.dataSource
           });
@@ -57,7 +88,54 @@ export class HomepageComponent implements AfterViewInit {
       }
     }
   }
+
+  private createSvg(): void {
+    this.svg = d3.select("figure#pie")
+      .append("svg")
+      .attr("width", this.width + this.margin * 2)
+      .attr("height", this.height + this.margin * 2)
+      .append("g")
+      .attr("transform", "translate(" + (this.width / 2 + this.margin) + "," + (this.height / 2 + this.margin) + ")");
+  }
+
+  private createColors(): void {
+    this.colors = d3.scaleOrdinal<string, string>()
+      .domain(this.dataSource.datasets[0].data.map(String))
+      .range([
+        '#ffcd56', '#ff6384', '#36a2eb', '#fd6b19',
+        '#4bc0c0', '#9966ff', '#ff9f40'
+      ]);
+  }
+
+  private drawChart(): void {
+    const pie = d3.pie<any>().value((d: any) => Number(d.Stars));
+
+    this.svg.selectAll('pieces')
+      .data(pie(this.data))
+      .enter()
+      .append('path')
+      .attr('d', d3.arc()
+        .innerRadius(this.radius * 0.5)
+        .outerRadius(this.radius))
+      .attr('fill', (d: any, i: any) => this.colors(i))
+      .attr("stroke", "#121926")
+      .style("stroke-width", "1px");
+
+    const labelLocation = d3.arc()
+      .innerRadius(this.radius * 0.6)
+      .outerRadius(this.radius);
+
+    this.svg.selectAll('pieces')
+      .data(pie(this.data))
+      .enter()
+      .append('text')
+      .text((d: any) => d.data.Framework)
+      .attr("transform", (d: any) => "translate(" + labelLocation.centroid(d) + ")")
+      .style("text-anchor", "middle")
+      .style("font-size", 10);
+  }
 }
+
 
 // allow data to be read
 interface Dataset {
